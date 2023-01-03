@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace Budget_App
 {
@@ -19,6 +21,7 @@ namespace Budget_App
         {
             InitializeComponent();
             createbudget = form;
+   
         }
         Bitmap neuesbild;
         private void UserImage_Click(object sender, EventArgs e)
@@ -72,11 +75,16 @@ namespace Budget_App
 
         private void AddButton_Click(object sender, EventArgs e)
         {
+            XmlSerializer xml = new XmlSerializer(typeof(List<Category>));
             Category newcat = new Category();
+            FileStream stream = File.Open("Categories.xml", FileMode.OpenOrCreate);
+
             newcat.CategoryImage = neuesbild;
             newcat.CategoryName = CategoryNameText.Text;
             createbudget.budgetcategories.Add(newcat);
             createbudget.CategoryBox.Items.Add(newcat.ToString());
+            xml.Serialize(stream, createbudget.budgetcategories);
+            stream.Close();
         }
     }
 }

@@ -11,16 +11,18 @@ using System.Windows.Forms;
 
 namespace Budget_App
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public List<Budget> budgetList = new List<Budget>();
+
+        public MainForm()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void AddButton_Click(object sender, EventArgs e)
         {
-            CreateBudget budget = new CreateBudget();
+            CreateBudget budget = new CreateBudget(this);
             budget.Show();
         }
     }
