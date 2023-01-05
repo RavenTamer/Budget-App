@@ -43,7 +43,7 @@
             // 
             // NoteBox
             // 
-            this.NoteBox.Location = new System.Drawing.Point(51, 287);
+            this.NoteBox.Location = new System.Drawing.Point(47, 287);
             this.NoteBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.NoteBox.Multiline = true;
             this.NoteBox.Name = "NoteBox";

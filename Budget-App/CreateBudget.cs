@@ -65,16 +65,16 @@ namespace Budget_App
 
         private void SubmitButton_Click(object sender, EventArgs e)
         {
-            XmlSerializer xml = new XmlSerializer(typeof(List<Budget>));
             Budget budget = new Budget();
-            FileStream stream = File.Open("Categories.xml", FileMode.OpenOrCreate);
-
             budget.Category = CategoryBox.SelectedItem as Category;
             budget.Currency = (string)CurrencyBox.SelectedItem;
             budget.Time = (string)TimeBox.SelectedItem;
             budget.Note = NoteBox.Text;
             budget.MoneyAmount = MoneyAmountNumeric.Value;
             mainForm.budgetList.Add(budget);
+
+            XmlSerializer xml = new XmlSerializer(typeof(List<Budget>));
+            FileStream stream = File.Open("Budgets.xml", FileMode.OpenOrCreate);
             xml.Serialize(stream, mainForm.budgetList);
             stream.Close();
         }

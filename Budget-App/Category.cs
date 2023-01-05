@@ -36,7 +36,7 @@ namespace Budget_App
         {
             if (this.CategoryImage == null)
             {
-                this.CategoryImageData = null;
+                this.categoryImageData = null;
             }
             else
             {
@@ -52,7 +52,7 @@ namespace Budget_App
         {
             if (this.CategoryImageData == null)
             {
-                this.CategoryImage = null;
+                this.categoryImage = null;
             }
             else
             {

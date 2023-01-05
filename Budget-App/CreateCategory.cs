@@ -82,7 +82,7 @@ namespace Budget_App
             newcat.CategoryImage = neuesbild;
             newcat.CategoryName = CategoryNameText.Text;
             createbudget.budgetcategories.Add(newcat);
-            createbudget.CategoryBox.Items.Add(newcat.ToString());
+            createbudget.CategoryBox.Items.Add(newcat);
             xml.Serialize(stream, createbudget.budgetcategories);
             stream.Close();
         }
