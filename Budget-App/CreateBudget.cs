@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using ComponentFactory.Krypton.Toolkit;
 
 namespace Budget_App
 {
-    public partial class CreateBudget : Form
+    public partial class CreateBudget : KryptonForm
     {
         MainForm mainForm;
         public List<Category> budgetcategories = new List<Category>();
@@ -38,18 +39,32 @@ namespace Budget_App
 
                 stream.Close();
             }
+
             mainForm = form;
-            CategoryBox.Items.Add("+");
+
+            CurrencyBox.Items.Add("CHF");
+            CurrencyBox.Items.Add("€");
+            CurrencyBox.Items.Add("£");
+            CurrencyBox.Items.Add("$");
+
+            TimeBox.Items.Add("Daily");
+            TimeBox.Items.Add("Weekly");
+            TimeBox.Items.Add("Monthly");
+            TimeBox.Items.Add("Quarterly");
+            TimeBox.Items.Add("Semesterly");
+            TimeBox.Items.Add("Yearly");
+            
+
         }
-        private void CategoryBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void CategoryButton_Click(object sender, EventArgs e)
         {
-            if (Convert.ToString(CategoryBox.SelectedItem) == "+")
-            {
-                CreateCategory createcategory = new CreateCategory(this);
-                createcategory.Show();
-            }
+            CreateCategory createcategory = new CreateCategory(this);
+            createcategory.Show();
+            Hide();
+        }
 
-
+        private void CategoryBox_SelectedIndexChanged(object sender, EventArgs e) 
+        {
             Category c = CategoryBox.SelectedItem as Category;
 
             if (c != null) 
@@ -65,6 +80,8 @@ namespace Budget_App
 
         private void SubmitButton_Click(object sender, EventArgs e)
         {
+            if (CategoryBox.Text != "")
+            {
             Budget budget = new Budget();
             budget.Category = CategoryBox.SelectedItem as Category;
             budget.Currency = (string)CurrencyBox.SelectedItem;
@@ -77,6 +94,20 @@ namespace Budget_App
             FileStream stream = File.Open("Budgets.xml", FileMode.OpenOrCreate);
             xml.Serialize(stream, mainForm.budgetList);
             stream.Close();
+
+            mainForm.Show();
+            this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Please select a Category!!!");
+            }
+
+        }
+
+        private void CreateBudget_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            mainForm.Show();
         }
     }
 }

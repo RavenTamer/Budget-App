@@ -11,10 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using ComponentFactory.Krypton.Toolkit;
 
 namespace Budget_App
 {
-    public partial class CreateCategory : Form
+    public partial class CreateCategory : KryptonForm
     {
         CreateBudget createbudget;
         public CreateCategory(CreateBudget form)
@@ -32,7 +33,7 @@ namespace Budget_App
 
             if (open.ShowDialog() == DialogResult.OK)
             {
-                double x = 0;
+                double x;
                 double zielhoehe = 0;
                 double zielbreite = 0;
                 Bitmap newimage = new Bitmap(open.FileName);
@@ -40,36 +41,47 @@ namespace Budget_App
                 double maxheight = Convert.ToDouble(UserImage.MaximumSize.Height);
                 double newimagewidth = Convert.ToDouble(newimage.Width);
                 double maxwidth = Convert.ToDouble(UserImage.MaximumSize.Width);
-                if (newimage.Height > UserImage.MaximumSize.Height && newimage.Height > newimage.Width)
-                {
-                    x = newimageheight / maxheight;	                    //= Verhältnis
-                    zielhoehe = newimageheight / x;			            //= UserImageMax.height
-                    zielbreite = newimagewidth / x;		                //=width proportional zu height
-                }
-                if (newimage.Width > UserImage.MaximumSize.Width && newimage.Width > newimage.Height)
-                {
-                    x = newimagewidth / maxwidth;
-                    zielbreite = newimagewidth / x;
-                    zielhoehe = newimageheight / x;
-                }
-                if (newimage.Height > UserImage.MaximumSize.Height && newimage.Height == newimage.Width)
-                {
-                    x = newimageheight / maxheight;
-                    zielhoehe = newimageheight / x;
-                    zielbreite = newimagewidth / x;
-                }
 
-                Bitmap scaledimg = new Bitmap((int)(zielbreite), (int)(zielhoehe));
+                if (newimageheight > 100 || newimagewidth > 100)
+                {
 
 
-                using (Graphics gNew = Graphics.FromImage(scaledimg))
-                {
-                    gNew.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    gNew.DrawImage(newimage, new Rectangle(0, 0, (int)(zielbreite), (int)(zielhoehe)));
-                }
+                    if (newimage.Height > UserImage.MaximumSize.Height && newimage.Height > newimage.Width)
+                    {
+                        x = newimageheight / maxheight;                     //= Verhältnis
+                        zielhoehe = newimageheight / x;                     //= UserImageMax.height
+                        zielbreite = newimagewidth / x;                     //=width proportional zu height
+                    }
+                    if (newimage.Width > UserImage.MaximumSize.Width && newimage.Width > newimage.Height)
+                    {
+                        x = newimagewidth / maxwidth;
+                        zielbreite = newimagewidth / x;
+                        zielhoehe = newimageheight / x;
+                    }
+                    if (newimage.Height > UserImage.MaximumSize.Height && newimage.Height == newimage.Width)
+                    {
+                        x = newimageheight / maxheight;
+                        zielhoehe = newimageheight / x;
+                        zielbreite = newimagewidth / x;
+                    }
 
-                neuesbild = scaledimg;
-                UserImage.Image = neuesbild;
+                    Bitmap scaledimg = new Bitmap((int)(zielbreite), (int)(zielhoehe));
+
+
+                    using (Graphics gNew = Graphics.FromImage(scaledimg))
+                    {
+                        gNew.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        gNew.DrawImage(newimage, new Rectangle(0, 0, (int)(zielbreite), (int)(zielhoehe)));
+                    }
+
+                    neuesbild = scaledimg;
+                    UserImage.Image = neuesbild;
+                }
+                else
+                {
+                    UserImage.Image = newimage;
+                }
+                ImageLabel.Visible = false;
             }
         }
 
@@ -85,6 +97,14 @@ namespace Budget_App
             createbudget.CategoryBox.Items.Add(newcat);
             xml.Serialize(stream, createbudget.budgetcategories);
             stream.Close();
+
+            createbudget.Show();
+            this.Close();
+        }
+
+        private void CreateCategory_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            createbudget.Show();
         }
     }
 }
