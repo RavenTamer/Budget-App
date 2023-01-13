@@ -26,7 +26,7 @@ namespace Budget_App
         public MainForm()
         {
             InitializeComponent();
-
+            
             XmlSerializer xml = new XmlSerializer(typeof(List<Budget>));
 
             if (File.Exists("Budgets.xml"))
@@ -37,22 +37,28 @@ namespace Budget_App
             }
             DrawBudgetList();
         }
-
-        private void RemoveBudget(Button sender, List<Budget> budgetList)
+        private void DeleteButton_RemoveBudget(object sender, EventArgs e)
         {
-            int count = Convert.ToInt32(sender.AccessibleDescription);
-            budgetList.RemoveAt(count);
+            Button budgetdelete = (Button)sender;
+            budgetList.RemoveAt((int)budgetdelete.Tag);
             XmlSerializer xml = new XmlSerializer(typeof(List<Budget>));
             TextWriter writer = File.CreateText("Budgets.xml");
             xml.Serialize(writer, budgetList);
+            writer.Close();
             DrawBudgetList();
         }
-
         private void AddButton_Click(object sender, EventArgs e)
         {
             CreateBudget budget = new CreateBudget(this);
             budget.Show();
             Hide();
+        }
+        private void NoteButton_Click(object sender, EventArgs e)
+        {
+            Button note = (Button)sender;
+            Budget budget = budgetList[Convert.ToInt32(note.Tag)];
+            string noteText = budget.ToString();
+            MessageBox.Show(noteText);
         }
         private void MainForm_Activated(object sender, EventArgs e)
         {
@@ -82,7 +88,7 @@ namespace Budget_App
                         // 
                         AmountLabel = new Label();
                         AmountLabel.AutoSize = true;
-                        AmountLabel.Location = new System.Drawing.Point(0, 0);
+                        AmountLabel.Location = new System.Drawing.Point(70, 30);
                         AmountLabel.Name = "AmountLabel";
                         AmountLabel.Size = new System.Drawing.Size(65, 20);
                         AmountLabel.TabIndex = 1;
@@ -92,17 +98,66 @@ namespace Budget_App
                         // CategoryPicture
                         //
                         CategoryPicture = new PictureBox();
+                        CategoryPicture.Size = new System.Drawing.Size(50, 50); 
+                        CategoryPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+                        CategoryPicture.Tag = count;
+                        CategoryPicture.Location = new System.Drawing.Point(5, 20);
+
+                     
                         if (budget.Category.CategoryImage != null)
                         {
-                            CategoryPicture.Image = budget.Category.CategoryImage;
+                            if((int)CategoryPicture.Tag == count) 
+                            {
+                                double x;
+                                double zielhoehe = 0;
+                                double zielbreite = 0;
+                                Bitmap newimage = new Bitmap(budget.Category.CategoryImage);
+                                double newimageheight = Convert.ToDouble(newimage.Height);
+                                double newimagewidth = Convert.ToDouble(newimage.Width);
+                                double maxheight = Convert.ToDouble(CategoryPicture.Size.Height);
+                                double maxwidth = Convert.ToDouble(CategoryPicture.Size.Width);
+
+                                if (newimageheight > 50 || newimagewidth > 50)
+                                {
+
+
+                                    if (newimage.Height > CategoryPicture.Size.Height && newimage.Height > newimage.Width)
+                                    {
+                                        x = newimageheight / maxheight;                     //= Verhältnis
+                                        zielhoehe = newimageheight / x;                     //= UserImageMax.height
+                                        zielbreite = newimagewidth / x;                     //= width proportional zu height
+                                    }
+                                    if (newimage.Width > CategoryPicture.Size.Width && newimage.Width > newimage.Height)
+                                    {
+                                        x = newimagewidth / maxwidth;
+                                        zielbreite = newimagewidth / x;
+                                        zielhoehe = newimageheight / x;
+                                    }
+                                    if (newimage.Height > CategoryPicture.Size.Height && newimage.Height == newimage.Width)
+                                    {
+                                        x = newimageheight / maxheight;
+                                        zielhoehe = newimageheight / x;
+                                        zielbreite = newimagewidth / x;
+                                    }
+
+                                    Bitmap scaledimg = new Bitmap((int)(zielbreite), (int)(zielhoehe));
+
+
+                                    using (Graphics gNew = Graphics.FromImage(scaledimg))
+                                    {
+                                        gNew.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                        gNew.DrawImage(newimage, new Rectangle(0, 0, (int)(zielbreite), (int)(zielhoehe)));
+                                    }
+
+                                    CategoryPicture.Image = scaledimg;
+                                }
+                            }
                         }
                         else
                         {
                             CategoryPicture.Image = Properties.Resources.placeholder_cropped;
                         }
                         CategoryPicture.Name = "CategoryPicture";
-                        CategoryPicture.Size = new System.Drawing.Size(50, 50);
-                        CategoryPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
                         CategoryPicture.TabIndex = 0;
                         CategoryPicture.TabStop = false;
                         BudgetBox.Controls.Add(CategoryPicture);
@@ -111,7 +166,7 @@ namespace Budget_App
                         // 
                         CurrencyLabel = new Label();
                         CurrencyLabel.AutoSize = true;
-                        CurrencyLabel.Location = new System.Drawing.Point(0, 0);
+                        CurrencyLabel.Location = new System.Drawing.Point(120, 30);
                         CurrencyLabel.Name = "CurrencyLabel";
                         CurrencyLabel.Size = new System.Drawing.Size(72, 20);
                         CurrencyLabel.TabIndex = 2;
@@ -122,13 +177,15 @@ namespace Budget_App
                         // 
                         NoteButton = new Button();
                         NoteButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        NoteButton.Location = new System.Drawing.Point(5, 5);
+                        NoteButton.Location = new System.Drawing.Point(200, 25);
                         NoteButton.Name = "NoteButton";
                         NoteButton.Size = new System.Drawing.Size(37, 37);
                         NoteButton.TabIndex = 3;
                         NoteButton.Text = "≡";
+                        NoteButton.Tag = count;
                         NoteButton.UseVisualStyleBackColor = true;
                         BudgetBox.Controls.Add(NoteButton);
+                        NoteButton.Click += NoteButton_Click;
                         // 
                         // TimeLabel
                         // 
@@ -136,6 +193,7 @@ namespace Budget_App
                         TimeLabel.AutoSize = true;
                         TimeLabel.Name = "TimeLabel";
                         TimeLabel.Size = new System.Drawing.Size(43, 20);
+                        TimeLabel.Location = new System.Drawing.Point(99, 55);
                         TimeLabel.TabIndex = 4;
                         TimeLabel.Text = budget.Time;
                         BudgetBox.Controls.Add(TimeLabel);
@@ -152,8 +210,8 @@ namespace Budget_App
                         DeleteButton.UseVisualStyleBackColor = true;
                         this.Controls.Add(DeleteButton);
                         BudgetBox.Controls.Add(DeleteButton);
-                        DeleteButton.Click += (s, f) => RemoveBudget(this.DeleteButton, budgetList);
-                        DeleteButton.AccessibleDescription = Convert.ToString(count);
+                        DeleteButton.Click += DeleteButton_RemoveBudget;
+                        DeleteButton.Tag = (int)count;
                         count++;
                     }
                 }

@@ -87,19 +87,26 @@ namespace Budget_App
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            XmlSerializer xml = new XmlSerializer(typeof(List<Category>));
-            Category newcat = new Category();
-            FileStream stream = File.Open("Categories.xml", FileMode.OpenOrCreate);
+            if (CategoryNameText.Text != "") 
+            {
+                XmlSerializer xml = new XmlSerializer(typeof(List<Category>));
+                Category newcat = new Category();
+                FileStream stream = File.Open("Categories.xml", FileMode.OpenOrCreate);
 
-            newcat.CategoryImage = neuesbild;
-            newcat.CategoryName = CategoryNameText.Text;
-            createbudget.budgetcategories.Add(newcat);
-            createbudget.CategoryBox.Items.Add(newcat);
-            xml.Serialize(stream, createbudget.budgetcategories);
-            stream.Close();
+                newcat.CategoryImage = neuesbild;
+                newcat.CategoryName = CategoryNameText.Text;
+                createbudget.budgetcategories.Add(newcat);
+                createbudget.CategoryBox.Items.Add(newcat);
+                xml.Serialize(stream, createbudget.budgetcategories);
+                stream.Close();
 
-            createbudget.Show();
-            this.Close();
+                createbudget.Show();
+                this.Close(); 
+            }
+            else
+            {
+                MessageBox.Show("Please select a Category!!!");
+            }
         }
 
         private void CreateCategory_FormClosed(object sender, FormClosedEventArgs e)

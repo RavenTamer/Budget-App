@@ -24,5 +24,9 @@ namespace Budget_App
         public string Note { get { return note; } set { note = value; } }
 
         public decimal MoneyAmount { get { return moneyamount; } set { moneyamount = value; } }
+        public override string ToString()
+        {
+            return this.note;
+        }
     }
 }
